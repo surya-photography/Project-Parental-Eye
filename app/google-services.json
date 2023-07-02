@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "50152172217",
+    "firebase_url": "https://parent-keylogger-default-rtdb.firebaseio.com",
+    "project_id": "parent-keylogger",
+    "storage_bucket": "parent-keylogger.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:50152172217:android:14bbcff42ddd8eb4e84968",
+        "android_client_info": {
+          "package_name": "com.maemresen.infsec.keylogapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "50152172217-7agq4bmdbmqraui4sb89bfvhjepo27in.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBluyNQyRka8IrjxM0OO6eeAyimsRFugp0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "50152172217-7agq4bmdbmqraui4sb89bfvhjepo27in.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

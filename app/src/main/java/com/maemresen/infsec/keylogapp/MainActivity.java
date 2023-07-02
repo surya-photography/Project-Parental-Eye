@@ -15,12 +15,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.maemresen.infsec.keylogapp.util.Helper;
 
 public class MainActivity extends AppCompatActivity {
 
     private final static String LOG_TAG = Helper.getLogTag(MainActivity.class);
-
     private Button button;
 
     @Override
@@ -37,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
             startActivity(openSettings);
         });
     }
-
     private static final int PERMISSION_REQUEST_CODE = 200;
 
     private boolean checkPermission() {

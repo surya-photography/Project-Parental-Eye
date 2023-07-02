@@ -45,7 +45,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="10dp"
             android:fontFamily="sans-serif-medium"
-            android:text="Keylogger: Advanced Tracking and Monitoring Solution"
+            android:text="Advanced Tracking and Monitoring Solution"
             android:textColor="#99FFFFFF"
             android:textSize="15sp" />
 
@@ -60,60 +60,13 @@
 
     </RelativeLayout>
 
-    <RelativeLayout
-        android:id="@+id/relativeLayout"
-        android:layout_width="250dp"
-        android:layout_height="200dp"
-        android:layout_centerInParent="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title">
-
-        <TextView
-            android:id="@+id/textView_college"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:fontFamily="sans-serif-medium"
-            android:gravity="center"
-            android:text="MVSR Engineering College"
-            android:textColor="@android:color/white"
-            android:textSize="20dp"
-            app:fontFamily="@font/bowlby_one_sc" />
-
-        <TextView
-            android:id="@+id/textView_developer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/textView_college"
-            android:layout_centerHorizontal="true"
-            android:fontFamily="sans-serif"
-            android:text="Developers: "
-            android:textColor="@android:color/white"
-            android:textSize="14sp"
-            app:fontFamily="@font/bad_script" />
-
-        <TextView
-            android:id="@+id/textView_branch_year"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/textView_developer"
-            android:layout_centerHorizontal="true"
-            android:fontFamily="sans-serif"
-            android:text="Branch: CSE, 3rd Year"
-            android:textColor="@android:color/white"
-            android:textSize="14sp"
-            app:fontFamily="@font/exo_light" />
-
-    </RelativeLayout>
-
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@+id/textView_copyright"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/relativeLayout">
+        app:layout_constraintTop_toBottomOf="@+id/title">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -121,11 +74,55 @@
             android:gravity="center"
             android:orientation="vertical">
 
+            <RelativeLayout
+                android:id="@+id/relativeLayout"
+                android:layout_width="250dp"
+                android:layout_height="200dp">
+
+                <TextView
+                    android:id="@+id/textView_college"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_centerHorizontal="true"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center"
+                    android:text="MVSR Engineering College"
+                    android:textColor="#E6FFFFFF"
+                    android:textSize="20dp"
+                    app:fontFamily="@font/bowlby_one_sc" />
+
+                <TextView
+                    android:id="@+id/textView_developer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/textView_college"
+                    android:layout_centerHorizontal="true"
+                    android:fontFamily="sans-serif"
+                    android:text="Developers: "
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp"
+                    app:fontFamily="@font/bad_script" />
+
+                <TextView
+                    android:id="@+id/textView_branch_year"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/textView_developer"
+                    android:layout_centerHorizontal="true"
+                    android:fontFamily="sans-serif"
+                    android:text="Branch: CSE, 3rd Year"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp"
+                    app:fontFamily="@font/exo_light" />
+
+            </RelativeLayout>
+
+
             <TextView
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
                 android:fontFamily="sans-serif-light"
                 android:gravity="center"
                 android:text="Test By Typing"
@@ -151,7 +148,7 @@
                 android:id="@+id/editTextTextPersonName"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
-                android:layout_marginTop="80dp"
+                android:layout_marginTop="50dp"
                 android:layout_marginBottom="30dp"
                 android:background="@drawable/edittext_background"
                 android:ems="10"
@@ -173,8 +170,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:text="Copyrights Info"
-        android:textColor="@android:color/white"
+        android:gravity="center"
+        android:text="© MVSR Engineering College 2023\nThis project (Keylogger) by me and my team of CSE 3rd year."
+        android:textColor="#80FFFFFF"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
