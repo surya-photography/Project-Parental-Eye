@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <RelativeLayout
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/imageView_logo"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@+id/textView_keylogger"
+            android:background="@drawable/keylogger" />
+
+        <TextView
+            android:id="@+id/textView_keylogger"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/imageView_logo"
+            android:layout_centerInParent="true"
+            android:fontFamily="sans-serif-medium"
+            android:text="Keylogger"
+            android:textColor="@android:color/black"
+            android:textSize="24sp"/>
+
+        <TextView
+            android:id="@+id/keylogger_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textView_keylogger"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="Advanced Tracking and Monitoring Solution"
+            android:textColor="#CC000000"
+            android:textSize="15sp" />
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/keylogger_description"
+            android:layout_marginTop="8dp"
+            android:background="#80000000" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="250dp"
+        android:layout_height="200dp"
+        app:layout_constraintBottom_toTopOf="@+id/textView_copyright"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title">
+
+        <TextView
+            android:id="@+id/textView_college"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_centerHorizontal="true"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:text="MVSR Engineering College"
+            android:textColor="#000"
+            android:textSize="20dp"
+            app:fontFamily="@font/bowlby_one_sc" />
+
+        <TextView
+            android:id="@+id/textView_developer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textView_college"
+            android:layout_centerHorizontal="true"
+            android:fontFamily="sans-serif"
+            android:text="Developers: "
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            app:fontFamily="@font/bad_script" />
+
+        <TextView
+            android:id="@+id/textView_branch_year"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textView_developer"
+            android:layout_centerHorizontal="true"
+            android:fontFamily="sans-serif"
+            android:text="Branch: CSE, 3rd Year"
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            app:fontFamily="@font/exo_light" />
+
+    </RelativeLayout>
+    <TextView
+        android:id="@+id/textView_copyright"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
+        android:text="© MVSR Engineering College 2023\nThis project (Keylogger) by me and my team of CSE 3rd year."
+        android:textColor="#80000000"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>
