@@ -16,7 +16,7 @@
         android:padding="20dp">
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/locationText"
             android:background="@drawable/background_border"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -26,7 +26,13 @@
             android:paddingHorizontal="10dp"
             android:paddingVertical="15dp"
             android:text="Your Text Here" />
-
+        <ImageView
+            android:id="@+id/directions"
+            android:layout_margin="5dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:background="@drawable/direactions"
+            android:layout_gravity="right"/>
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>

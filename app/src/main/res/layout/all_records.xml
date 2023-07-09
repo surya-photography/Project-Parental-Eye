@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white">
@@ -17,11 +18,9 @@
         app:layout_constraintVertical_chainStyle="packed" />
 
     <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/animationView2"
+        android:id="@+id/animationAllRecords"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:lottie_rawRes="@raw/skeleton_card"
-        app:lottie_repeatCount="999"
-        app:lottie_autoPlay="true" />
+        app:lottie_rawRes="@raw/skeleton_card" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

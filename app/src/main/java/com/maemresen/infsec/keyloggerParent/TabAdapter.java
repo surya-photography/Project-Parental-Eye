@@ -17,14 +17,14 @@ public class TabAdapter extends FragmentPagerAdapter {
     public Fragment getItem( int position ) {
         // Return the appropriate fragment based on the tab position
         switch (position) {
-            case 1:
-                return new DigitalWellBeingFragment();
             case 0:
                 return new AllRecordsFragment();
-            case 2:
+            case 1:
                 return new KeyboardActivityFragment();
-            case 3:
+            case 2:
                 return new CaughtUsingBadWordsFragment();
+            case 3:
+                return new LocationFragment();
             case 4:
                 return new Credits();
             default:
@@ -41,14 +41,14 @@ public class TabAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle( int position ) {
         // Return the title of each tab
         switch (position) {
-            case 1:
-                return "Digital Well-being";
             case 0:
                 return "All Records";
-            case 2:
+            case 1:
                 return "Keyboard Activity";
-            case 3:
+            case 2:
                 return "Caught Using Bad Words";
+            case 3:
+                return "Location";
             case 4:
                 return "Credits";
             default:

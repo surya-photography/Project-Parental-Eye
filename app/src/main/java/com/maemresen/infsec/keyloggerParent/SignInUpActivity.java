@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
@@ -22,6 +23,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -34,6 +37,7 @@ public class SignInUpActivity extends AppCompatActivity {
     
     private EditText emailEditText, passwordEditText;
     private Button signInButton, signUpButton, googleAuthButton;
+    private TextView forgotPassword;
     private FirebaseAuth firebaseAuth;
     
     private static final int RC_SIGN_IN = 123;
@@ -52,6 +56,7 @@ public class SignInUpActivity extends AppCompatActivity {
         signInButton = findViewById( R.id.custom_signin_button );
         signUpButton = findViewById( R.id.custom_signup_button );
         googleAuthButton = findViewById( R.id.google_login_button );
+        forgotPassword = findViewById( R.id.forgot_password_button );
         
         firebaseAuth = FirebaseAuth.getInstance();
         
@@ -100,6 +105,44 @@ public class SignInUpActivity extends AppCompatActivity {
             }
         } );
         
+        forgotPassword.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick( View view ) {
+                ForgotPassword();
+            }
+        } );
+        
+    }
+    
+    private void ForgotPassword() {
+        
+        String email = emailEditText.getText().toString().trim();
+        
+        if (TextUtils.isEmpty( email )) {
+            emailEditText.setError( "Required" );
+            return;
+        }
+        String gmailPattern = "[a-zA-Z0-9._%+-]+@gmail\\.com";
+    
+        if (!email.matches(gmailPattern)) {
+            emailEditText.setError("Invalid Gmail format");
+            return;
+        }
+        firebaseAuth.sendPasswordResetEmail( email )
+                .addOnSuccessListener( new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess( Void aVoid ) {
+                        // Password reset email sent successfully
+                        Toast.makeText( SignInUpActivity.this, "Password reset email sent", Toast.LENGTH_SHORT ).show();
+                    }
+                } )
+                .addOnFailureListener( new OnFailureListener() {
+                    @Override
+                    public void onFailure( @NonNull Exception e ) {
+                        // Error occurred while sending the password reset email
+                        Toast.makeText( SignInUpActivity.this, "Failed to send password reset email", Toast.LENGTH_SHORT ).show();
+                    }
+                } );
     }
     
     private void signIn() {
@@ -110,7 +153,12 @@ public class SignInUpActivity extends AppCompatActivity {
             emailEditText.setError( "Required" );
             return;
         }
-        
+        String gmailPattern = "[a-zA-Z0-9._%+-]+@gmail\\.com";
+    
+        if (!email.matches(gmailPattern)) {
+            emailEditText.setError("Invalid Gmail format");
+            return;
+        }
         if (TextUtils.isEmpty( password )) {
             passwordEditText.setError( "Required" );
             passwordEditText.setTextColor( Color.parseColor( "#000000" ) );
@@ -127,9 +175,7 @@ public class SignInUpActivity extends AppCompatActivity {
                             finish();
                         } else {
                             passwordEditText.setTextColor( Color.parseColor( "#FF0000" ) );
-                            Toast.makeText( getApplicationContext(), "Authentication " +
-                                            "failed!/nEmail Doesn't match Please SignUP",
-                                    Toast.LENGTH_LONG ).show();
+                            Toast.makeText(getApplicationContext(), "Authentication failed!\nEmail Doesn't match Please Sign Up", Toast.LENGTH_LONG).show();
                         }
                     }
                 } );
@@ -143,7 +189,12 @@ public class SignInUpActivity extends AppCompatActivity {
             Toast.makeText( getApplicationContext(), "Enter email address!", Toast.LENGTH_SHORT ).show();
             return;
         }
-        
+        String gmailPattern = "[a-zA-Z0-9._%+-]+@gmail\\.com";
+    
+        if (!email.matches(gmailPattern)) {
+            emailEditText.setError("Invalid Gmail format");
+            return;
+        }
         if (TextUtils.isEmpty( password )) {
             Toast.makeText( getApplicationContext(), "Enter password!", Toast.LENGTH_SHORT ).show();
             return;
@@ -182,7 +233,11 @@ public class SignInUpActivity extends AppCompatActivity {
                     public void onComplete( @NonNull Task<AuthResult> task ) {
                         if (task.isSuccessful()) {
                             FirebaseUser user = firebaseAuth.getCurrentUser();
+                            
                             // Proceed with your app logic
+                            Intent intent = new Intent( SignInUpActivity.this, MainActivity.class );
+                            startActivity( intent );
+                            finish();
                         } else {
                             Toast.makeText( getApplicationContext(), "Firebase Authentication failed", Toast.LENGTH_SHORT ).show();
                         }

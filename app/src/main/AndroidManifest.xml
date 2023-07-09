@@ -38,6 +38,15 @@
 
         </activity>
 
+
+        <activity
+            android:name=".HomeAnimation"
+            android:exported="true">
+
+        </activity>
+
+
+
         <service
             android:name="com.google.firebase.components.ComponentDiscoveryService"
             android:exported="false">

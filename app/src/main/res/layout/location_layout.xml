@@ -6,7 +6,7 @@
     android:background="@color/white">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/BadWordsRecycler"
+        android:id="@+id/Locaionrecycler"
         android:layout_width="match_parent"
         android:paddingVertical="10dp"
         android:layout_height="0dp"
@@ -17,10 +17,15 @@
         app:layout_constraintVertical_chainStyle="packed" />
 
     <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/animationBadWordUsage"
+        android:id="@+id/animationLocation"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:lottie_rawRes="@raw/skeleton_card" />
-
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:lottie_autoPlay="true"
+        app:lottie_rawRes="@raw/skeleton_card"
+        app:lottie_repeatCount="999" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
