@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
         if (!checkPermission()) {
             requestPermission();
         }
+        
         button = findViewById(R.id.appCompatButton);
         button.setOnClickListener(v -> {
             Intent openSettings = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);

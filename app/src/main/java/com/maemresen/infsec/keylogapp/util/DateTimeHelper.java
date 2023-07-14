@@ -45,7 +45,17 @@ public class DateTimeHelper {
         simpleDateFormat.format(date);
         return date;
     }
-
+    public static int getMinutes(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return calendar.get(Calendar.MINUTE);
+    }
+    public static Date getCurrentTime() {
+        return Calendar.getInstance().getTime();
+    }
+    
+    
+    
     /**
      * Get the date as a string value...
      *

