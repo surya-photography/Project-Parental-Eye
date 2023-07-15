@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.airbnb.lottie.LottieAnimationView;
-import com.airbnb.lottie.LottieDrawable;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -35,8 +34,8 @@ public class CaughtUsingBadWordsFragment extends Fragment {
     private boolean isLoading;
     private SwipeRefreshLayout swipeRefreshLayout;
     
-    private String ownerName = "";
-    private String selectedDate = "";
+    private static String ownerName = "";
+    private static String selectedDate = "";
     
     @Nullable
     @Override
@@ -50,11 +49,6 @@ public class CaughtUsingBadWordsFragment extends Fragment {
         adapter = new BadWordsAdapter( textRecordsList );
         recyclerView.setAdapter( adapter );
         loadingAnimationView = rootView.findViewById( R.id.animationBadWordUsage );
-        
-        loadingAnimationView.setAnimation( R.raw.skeleton_card );
-        // Set the animation loop and start
-        loadingAnimationView.setRepeatCount( LottieDrawable.INFINITE );
-        loadingAnimationView.playAnimation();
         
         
         Bundle bundle = getArguments();
@@ -70,7 +64,9 @@ public class CaughtUsingBadWordsFragment extends Fragment {
             @Override
             public void onRefresh() {
                 // Perform the refresh operation
-                refreshData( ownerName, selectedDate );
+                if (ownerName != null || selectedDate != null) {
+                    refreshData( ownerName, selectedDate );
+                }
             }
         } );
         
@@ -81,17 +77,27 @@ public class CaughtUsingBadWordsFragment extends Fragment {
     private void refreshData( String ownerName, String databaseName ) {
         isLoading = true;
         
+        recyclerView.setVisibility( View.GONE );
         // Update the fragment data using the existing ownerName and databaseName variables
         UpdateFragment( ownerName, databaseName );
+        
+        // Start the animation
+        loadingAnimationView.setVisibility( View.VISIBLE );
+        loadingAnimationView.playAnimation();
         
         // Simulate a delay before stopping the refresh animation
         new Handler().postDelayed( new Runnable() {
             @Override
             public void run() {
                 swipeRefreshLayout.setRefreshing( false );
+                loadingAnimationView.setVisibility( View.GONE );
+                loadingAnimationView.cancelAnimation();
+                recyclerView.setVisibility( View.VISIBLE );
+                
             }
-        }, 4000 ); // Delay for 4 seconds
+        }, 2500 ); // Delay for 2.5 seconds
     }
+    
     
     public void UpdateFragment( String ownerName, String databaseName ) {
         
@@ -131,13 +137,7 @@ public class CaughtUsingBadWordsFragment extends Fragment {
     public void onResume() {
         super.onResume();
         
-        if (isLoading) {
-            // Show the loading animation view
-            loadingAnimationView.setVisibility( View.VISIBLE );
-        } else {
-            // Hide the loading animation view
-            loadingAnimationView.setVisibility( View.GONE );
-        }
+        UpdateFragment( ownerName, selectedDate );
         adapter.notifyDataSetChanged();
     }
 }

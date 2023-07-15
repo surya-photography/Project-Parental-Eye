@@ -43,10 +43,10 @@ public class NotificationService extends Service implements Application.Activity
     private Date lastNotificationTime = null;
     private NotificationManager notificationManager;
     private boolean isAppInForeground = false;
-
     
-    private String ownerName = "";
-    private String selectedDate = "";
+    
+    private static String ownerName = "";
+    private static String selectedDate = "";
     
     @Override
     public void onCreate() {
@@ -63,7 +63,7 @@ public class NotificationService extends Service implements Application.Activity
         
         // Start the service as a foreground service
         startForeground( NOTIFICATION_ID, notification );
-    
+        
         // Register the activity lifecycle callbacks
         Application application = (Application) getApplicationContext();
         application.registerActivityLifecycleCallbacks(this);
@@ -132,7 +132,7 @@ public class NotificationService extends Service implements Application.Activity
         // Add a ValueEventListener to track new messages
         allRecordsRef.addValueEventListener( new ValueEventListener() {
             public void onDataChange( @NonNull DataSnapshot dataSnapshot ) {
-    
+                
                 if (!isAppInForeground()) {
                     Date currentTime = new Date();
                     if (lastNotificationTime == null || currentTime.getTime() - lastNotificationTime.getTime() >= NOTIFICATION_INTERVAL) {

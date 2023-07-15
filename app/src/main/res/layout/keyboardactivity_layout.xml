@@ -11,6 +11,15 @@
         android:layout_height="match_parent"
         android:background="@color/white">
 
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/animationTextRecords"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            app:lottie_autoPlay="false"
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/skeleton_card" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/TextRecordsrecycler"
             android:layout_width="match_parent"
@@ -21,18 +30,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0"
             app:layout_constraintVertical_chainStyle="packed" />
-
-        <com.airbnb.lottie.LottieAnimationView
-            android:id="@+id/animationTextRecords"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:lottie_autoPlay="true"
-            app:lottie_rawRes="@raw/skeleton_card"
-            app:lottie_repeatCount="999" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.airbnb.lottie.LottieAnimationView;
-import com.airbnb.lottie.LottieDrawable;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -35,8 +34,8 @@ public class AllRecordsFragment extends Fragment {
     private boolean isLoading;
     private SwipeRefreshLayout swipeRefreshLayout;
     
-    private String ownerName = "";
-    private String selectedDate = "";
+    private static String ownerName = "";
+    private static String selectedDate = "";
     
     @Nullable
     @Override
@@ -51,47 +50,56 @@ public class AllRecordsFragment extends Fragment {
         recyclerView.setAdapter( adapter );
         loadingAnimationView = rootView.findViewById( R.id.animationAllRecords );
         
-        loadingAnimationView.setAnimation( R.raw.skeleton_card );
-        // Set the animation loop and start
-        loadingAnimationView.setRepeatCount( LottieDrawable.INFINITE );
-        loadingAnimationView.playAnimation();
-    
         
         Bundle bundle = getArguments();
         if (bundle != null) {
             ownerName = bundle.getString( "OWNER_NAME" );
             selectedDate = bundle.getString( "SELECTED_DATE" );
         }
-
+        
         UpdateFragment( ownerName, selectedDate );
-    
-        swipeRefreshLayout = rootView.findViewById(R.id.swipeAllRecords);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        
+        swipeRefreshLayout = rootView.findViewById( R.id.swipeAllRecords );
+        swipeRefreshLayout.setOnRefreshListener( new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 // Perform the refresh operation
-                refreshData(ownerName,selectedDate);
+                if (ownerName != null || selectedDate != null) {
+                    refreshData( ownerName, selectedDate );
+                }
+                
             }
-        });
-    
-    
+        } );
+        
+        
         return rootView;
     }
     
-    private void refreshData(String ownerName,String databaseName) {
+    private void refreshData( String ownerName, String databaseName ) {
         isLoading = true;
         
+        recyclerView.setVisibility( View.GONE );
         // Update the fragment data using the existing ownerName and databaseName variables
-        UpdateFragment(ownerName, databaseName);
+        UpdateFragment( ownerName, databaseName );
+        
+        // Start the animation
+        loadingAnimationView.setVisibility( View.VISIBLE );
+        loadingAnimationView.playAnimation();
         
         // Simulate a delay before stopping the refresh animation
         new Handler().postDelayed( new Runnable() {
             @Override
             public void run() {
-                swipeRefreshLayout.setRefreshing(false);
+                // End the animation
+                swipeRefreshLayout.setRefreshing( false );
+                loadingAnimationView.setVisibility( View.GONE );
+                loadingAnimationView.cancelAnimation();
+                recyclerView.setVisibility( View.VISIBLE );
+                
             }
-        }, 4000); // Delay for 4 seconds
+        }, 2500 ); // Delay for 2.5 seconds
     }
+    
     
     public void UpdateFragment( String ownerName, String databaseName ) {
         
@@ -113,9 +121,6 @@ public class AllRecordsFragment extends Fragment {
                 
                 // Notify the adapter that the data has changed
                 adapter.notifyDataSetChanged();
-                
-                isLoading = false;
-                loadingAnimationView.setVisibility( View.GONE );
             }
             
             @Override
@@ -131,13 +136,7 @@ public class AllRecordsFragment extends Fragment {
     public void onResume() {
         super.onResume();
         
-        if (isLoading) {
-            // Show the loading animation view
-            loadingAnimationView.setVisibility( View.VISIBLE );
-        } else {
-            // Hide the loading animation view
-            loadingAnimationView.setVisibility( View.GONE );
-        }
+        UpdateFragment( ownerName, selectedDate );
         adapter.notifyDataSetChanged();
     }
 }

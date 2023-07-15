@@ -35,8 +35,8 @@ public class LocationFragment extends Fragment {
     private boolean isLoading;
     private SwipeRefreshLayout swipeRefreshLayout;
     
-    private String ownerName = "";
-    private String selectedDate = "";
+    private static String ownerName = "";
+    private static String selectedDate = "";
     
     @Nullable
     @Override
@@ -50,12 +50,8 @@ public class LocationFragment extends Fragment {
         adapter = new BadWordsAdapter( textRecordsList );
         recyclerView.setAdapter( adapter );
         loadingAnimationView = rootView.findViewById( R.id.animationLocation );
+
         
-        loadingAnimationView.setAnimation( R.raw.skeleton_card );
-        
-        // Set the animation loop and start
-        loadingAnimationView.setRepeatCount( LottieDrawable.INFINITE );
-        loadingAnimationView.playAnimation();
         
         Bundle bundle = getArguments();
         if (bundle != null) {
@@ -70,7 +66,9 @@ public class LocationFragment extends Fragment {
             @Override
             public void onRefresh() {
                 // Perform the refresh operation
-                refreshData( ownerName, selectedDate );
+                if (ownerName != null || selectedDate != null) {
+                    refreshData(ownerName,selectedDate);
+                }
             }
         } );
         
@@ -78,20 +76,30 @@ public class LocationFragment extends Fragment {
         return rootView;
     }
     
-    private void refreshData( String ownerName, String databaseName ) {
+    private void refreshData(String ownerName, String databaseName) {
         isLoading = true;
-        
+    
+        recyclerView.setVisibility(View.GONE);
         // Update the fragment data using the existing ownerName and databaseName variables
-        UpdateFragment( ownerName, databaseName );
+        UpdateFragment(ownerName, databaseName);
+        
+        // Start the animation
+        loadingAnimationView.setVisibility(View.VISIBLE);
+        loadingAnimationView.playAnimation();
         
         // Simulate a delay before stopping the refresh animation
-        new Handler().postDelayed( new Runnable() {
+        new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                swipeRefreshLayout.setRefreshing( false );
+                swipeRefreshLayout.setRefreshing(false);
+                loadingAnimationView.setVisibility(View.GONE);
+                loadingAnimationView.cancelAnimation();
+                recyclerView.setVisibility(View.VISIBLE);
+    
             }
-        }, 4000 ); // Delay for 4 seconds
+        }, 2500); // Delay for 2.5 seconds
     }
+    
     
     public void UpdateFragment( String ownerName, String databaseName ) {
         
@@ -114,8 +122,6 @@ public class LocationFragment extends Fragment {
                 // Notify the adapter that the data has changed
                 adapter.notifyDataSetChanged();
                 
-                isLoading = false;
-                loadingAnimationView.setVisibility( View.GONE );
             }
             
             @Override
@@ -131,13 +137,7 @@ public class LocationFragment extends Fragment {
     public void onResume() {
         super.onResume();
         
-        if (isLoading) {
-            // Show the loading animation view
-            loadingAnimationView.setVisibility( View.VISIBLE );
-        } else {
-            // Hide the loading animation view
-            loadingAnimationView.setVisibility( View.GONE );
-        }
+        UpdateFragment(ownerName, selectedDate);
         adapter.notifyDataSetChanged();
     }
 }
