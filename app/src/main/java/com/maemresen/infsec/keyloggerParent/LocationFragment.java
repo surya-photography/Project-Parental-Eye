@@ -1,19 +1,18 @@
 package com.maemresen.infsec.keyloggerParent;
 
-import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.airbnb.lottie.LottieDrawable;
@@ -23,11 +22,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class LocationFragment extends Fragment {
     private DatabaseReference allRecordsRef;
@@ -37,6 +33,10 @@ public class LocationFragment extends Fragment {
     
     private LottieAnimationView loadingAnimationView;
     private boolean isLoading;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    
+    private String ownerName = "";
+    private String selectedDate = "";
     
     @Nullable
     @Override
@@ -56,21 +56,44 @@ public class LocationFragment extends Fragment {
         // Set the animation loop and start
         loadingAnimationView.setRepeatCount( LottieDrawable.INFINITE );
         loadingAnimationView.playAnimation();
-    
-        String ownerName = "";
-        String selectedDate = "";
+        
         Bundle bundle = getArguments();
         if (bundle != null) {
             ownerName = bundle.getString( "OWNER_NAME" );
             selectedDate = bundle.getString( "SELECTED_DATE" );
         }
-    
+        
         UpdateFragment( ownerName, selectedDate );
+        
+        swipeRefreshLayout = rootView.findViewById( R.id.swipeLocation );
+        swipeRefreshLayout.setOnRefreshListener( new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Perform the refresh operation
+                refreshData( ownerName, selectedDate );
+            }
+        } );
+        
         
         return rootView;
     }
     
-    public void UpdateFragment(String ownerName,String databaseName){
+    private void refreshData( String ownerName, String databaseName ) {
+        isLoading = true;
+        
+        // Update the fragment data using the existing ownerName and databaseName variables
+        UpdateFragment( ownerName, databaseName );
+        
+        // Simulate a delay before stopping the refresh animation
+        new Handler().postDelayed( new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing( false );
+            }
+        }, 4000 ); // Delay for 4 seconds
+    }
+    
+    public void UpdateFragment( String ownerName, String databaseName ) {
         
         allRecordsRef = FirebaseDatabase.getInstance().getReference( "Keylogger: User Data" )
                 .child( ownerName )
@@ -115,5 +138,6 @@ public class LocationFragment extends Fragment {
             // Hide the loading animation view
             loadingAnimationView.setVisibility( View.GONE );
         }
+        adapter.notifyDataSetChanged();
     }
 }

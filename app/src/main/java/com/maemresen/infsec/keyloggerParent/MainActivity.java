@@ -1,5 +1,7 @@
 package com.maemresen.infsec.keyloggerParent;
 
+import android.animation.ObjectAnimator;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,11 +26,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -41,15 +40,40 @@ public class MainActivity extends AppCompatActivity {
     private ArrayAdapter<String> dateAdapter;
     private String selectedOwnerName;
     private String selectedDate;
+    private ImageView arrowImageView;
+    private View deviceOptionsView;
+    private boolean isOptionsVisible = false;
+    
+    private TabAdapter tabAdapter;
+    private ViewPager viewPager;
     
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_main );
         
+        arrowImageView = findViewById( R.id.arrowImageView );
+        deviceOptionsView = findViewById( R.id.device_options );
+        arrowImageView.setImageResource( R.drawable.menu );
+        deviceOptionsView.setVisibility( View.INVISIBLE );
+        
+        arrowImageView.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick( View v ) {
+                if (isOptionsVisible) {
+                    slideUp( deviceOptionsView );
+                    arrowImageView.setImageResource( R.drawable.menu );
+                } else {
+                    slideDown( deviceOptionsView );
+                    arrowImageView.setImageResource( R.drawable.cross );
+                }
+                isOptionsVisible = !isOptionsVisible;
+            }
+        } );
+        
         TabLayout tabLayout = findViewById( R.id.tab_layout );
-        ViewPager viewPager = findViewById( R.id.view_pager );
-        TabAdapter tabAdapter = new TabAdapter( getSupportFragmentManager() );
+        viewPager = findViewById( R.id.view_pager );
+        tabAdapter = new TabAdapter( getSupportFragmentManager() );
         viewPager.setAdapter( tabAdapter );
         
         // Create custom tab views
@@ -137,8 +161,8 @@ public class MainActivity extends AppCompatActivity {
             
             @Override
             public void onNothingSelected( AdapterView<?> parent ) {
-                selectedOwnerName = Build.MODEL;
-                fetchDatesForOwner( selectedOwnerName );
+//                selectedOwnerName = Build.MODEL;
+//                fetchDatesForOwner( selectedOwnerName );
             }
         } );
         
@@ -153,43 +177,52 @@ public class MainActivity extends AppCompatActivity {
             
             @Override
             public void onNothingSelected( AdapterView<?> parent ) {
-                Date now = DateTimeHelper.getCurrentDay();
-                SimpleDateFormat dateFormat = new SimpleDateFormat( "dd-MM-yyyy", Locale.getDefault() );
-                String databaseName = dateFormat.format( now );
-                updateFragments( Build.MODEL, databaseName );
+//                Date now = DateTimeHelper.getCurrentDay();
+//                SimpleDateFormat dateFormat = new SimpleDateFormat( "dd-MM-yyyy", Locale.getDefault() );
+//                String databaseName = dateFormat.format( now );
+//                updateFragments( Build.MODEL, databaseName );
             }
         } );
+        
     }
     
     private void updateFragments( String ownerName, String date ) {
-        
         Bundle bundle = new Bundle();
-        bundle.putString( "OWNER_NAME", Build.MODEL );
+        bundle.putString( "OWNER_NAME", ownerName );
         bundle.putString( "SELECTED_DATE", date );
-        
     
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        for (Fragment fragment : fragmentManager.getFragments()) {
-            if (fragment instanceof AllRecordsFragment) {
-                AllRecordsFragment allRecordsFragment = (AllRecordsFragment) fragment;
-                allRecordsFragment.setArguments(bundle);
-                allRecordsFragment.UpdateFragment(ownerName,date);
-            } else if (fragment instanceof KeyboardActivityFragment) {
-                KeyboardActivityFragment keyboardActivityFragment = (KeyboardActivityFragment) fragment;
-                keyboardActivityFragment.setArguments(bundle);
-                keyboardActivityFragment.UpdateFragment(ownerName,date);
-            } else if (fragment instanceof CaughtUsingBadWordsFragment) {
-                CaughtUsingBadWordsFragment caughtUsingBadWordsFragment = (CaughtUsingBadWordsFragment) fragment;
-                caughtUsingBadWordsFragment.setArguments(bundle);
-                caughtUsingBadWordsFragment.UpdateFragment(ownerName,date);
-            } else if (fragment instanceof LocationFragment) {
-                LocationFragment locationFragment = (LocationFragment) fragment;
-                locationFragment.setArguments(bundle);
-                locationFragment.UpdateFragment(ownerName,date);
-            }
+        Intent serviceIntent = new Intent(MainActivity.this, NotificationService.class);
+        serviceIntent.putExtras(bundle);
+        
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(serviceIntent);
+        } else {
+            startService(serviceIntent);
         }
     
+    
+        // Update all fragments in the ViewPager
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        List<Fragment> fragments = fragmentManager.getFragments();
+        
+        for (Fragment fragment : fragments) {
+            if (fragment instanceof AllRecordsFragment) {
+                ( (AllRecordsFragment) fragment ).setArguments( bundle );
+                ( (AllRecordsFragment) fragment ).UpdateFragment( ownerName, date );
+            } else if (fragment instanceof KeyboardActivityFragment) {
+                ( (KeyboardActivityFragment) fragment ).setArguments( bundle );
+                ( (KeyboardActivityFragment) fragment ).UpdateFragment( ownerName, date );
+            } else if (fragment instanceof CaughtUsingBadWordsFragment) {
+                ( (CaughtUsingBadWordsFragment) fragment ).setArguments( bundle );
+                ( (CaughtUsingBadWordsFragment) fragment ).UpdateFragment( ownerName, date );
+            } else if (fragment instanceof LocationFragment) {
+                ( (LocationFragment) fragment ).setArguments( bundle );
+                ( (LocationFragment) fragment ).UpdateFragment( ownerName, date );
+            }
+        }
+        
     }
+    
     
     private void fetchDatesForOwner( String ownerName ) {
         DatabaseReference datesRef = FirebaseDatabase.getInstance().getReference( "Keylogger: User Data" )
@@ -213,5 +246,19 @@ public class MainActivity extends AppCompatActivity {
                 Log.e( "FirebaseError", "Data retrieval canceled: " + databaseError.getMessage() );
             }
         } );
+    }
+    
+    private void slideDown( View view ) {
+        ObjectAnimator animator = ObjectAnimator.ofFloat( view, "translationY", -view.getHeight(), 0 );
+        animator.setDuration( 300 );
+        animator.start();
+        view.setVisibility( View.VISIBLE );
+    }
+    
+    private void slideUp( View view ) {
+        ObjectAnimator animator = ObjectAnimator.ofFloat( view, "translationY", 0, -view.getHeight() );
+        animator.setDuration( 300 );
+        animator.start();
+        view.setVisibility( View.GONE );
     }
 }

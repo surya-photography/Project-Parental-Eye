@@ -30,6 +30,6 @@ public class HomeAnimation extends AppCompatActivity {
                 startActivity(home);
                 finish();
             }
-        }, 2500);
+        }, 2600);
     }
 }

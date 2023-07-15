@@ -5,11 +5,33 @@
     android:layout_height="match_parent"
     android:background="@color/white">
 
+    <View
+        android:id="@+id/view2"
+        android:layout_width="350dp"
+        android:layout_height="350dp"
+        android:background="@drawable/app_icon"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toTopOf="@+id/textView_copyright"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title" />
+
+    <View
+        android:id="@+id/blur"
+        android:layout_width="450dp"
+        android:layout_height="400dp"
+        android:alpha="0.55"
+        android:background="@drawable/blur2"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toTopOf="@+id/textView_copyright"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title" />
+
     <RelativeLayout
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -21,7 +43,7 @@
             android:layout_centerVertical="true"
             android:layout_marginRight="10dp"
             android:layout_toLeftOf="@+id/textView_keylogger"
-            android:background="@drawable/keylogger" />
+            android:background="@drawable/app_icon" />
 
         <TextView
             android:id="@+id/textView_keylogger"
@@ -29,10 +51,12 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/imageView_logo"
             android:layout_centerInParent="true"
+            android:background="@drawable/background_border_black"
             android:fontFamily="sans-serif-medium"
-            android:text="Keylogger"
+            android:paddingHorizontal="10dp"
+            android:text="Parental Eye"
             android:textColor="@android:color/black"
-            android:textSize="24sp"/>
+            android:textSize="24sp" />
 
         <TextView
             android:id="@+id/keylogger_description"
@@ -42,55 +66,66 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="10dp"
             android:fontFamily="sans-serif-medium"
-            android:text="Advanced Tracking and Monitoring Solution"
+            android:text="A parental monitoring app"
             android:textColor="#CC000000"
             android:textSize="15sp" />
 
         <View
+            android:layout_centerHorizontal="true"
             android:id="@+id/divider"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_below="@id/keylogger_description"
+            android:layout_marginHorizontal="50dp"
             android:layout_marginTop="8dp"
+            android:alpha="0.4"
             android:background="#80000000" />
 
     </RelativeLayout>
 
-    <RelativeLayout
-        android:id="@+id/relativeLayout"
-        android:layout_width="250dp"
-        android:layout_height="200dp"
-        app:layout_constraintBottom_toTopOf="@+id/textView_copyright"
+    <TextView
+        android:id="@+id/textView_college"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:alpha="0.8"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="MVSR \nEngineering College"
+        android:textColor="#000"
+        android:textSize="20dp"
+        app:fontFamily="@font/bowlby_one_sc"
+        app:layout_constraintBottom_toTopOf="@+id/view2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/title">
+        app:layout_constraintTop_toBottomOf="@+id/title" />
 
-        <TextView
-            android:id="@+id/textView_college"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+    <RelativeLayout
 
-            android:layout_centerHorizontal="true"
-            android:fontFamily="sans-serif-medium"
-            android:gravity="center"
-            android:text="MVSR Engineering College"
-            android:textColor="#000"
-            android:textSize="20dp"
-            app:fontFamily="@font/bowlby_one_sc" />
+        android:id="@+id/relativeLayout"
+        android:layout_width="300dp"
+        android:layout_height="250dp"
+        app:layout_constraintBottom_toBottomOf="@+id/view2"
+        app:layout_constraintEnd_toEndOf="@+id/view2"
+        app:layout_constraintStart_toStartOf="@+id/view2"
+        app:layout_constraintTop_toTopOf="@+id/view2">
+
 
         <TextView
             android:id="@+id/textView_developer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/textView_college"
-            android:layout_centerHorizontal="true"
+            android:layout_centerInParent="true"
             android:fontFamily="sans-serif"
-            android:text="Developers: "
-            android:textColor="@android:color/black"
-            android:textSize="14sp"
+            android:text="Developers: \tAnoushika Boddupalli\n\t\t\t\t\t\t\t\t\tSumayya Begum\n\t\t\t\t\t\t\t\t\tSri Ramya Paladi"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
             app:fontFamily="@font/bad_script" />
 
         <TextView
+    android:alpha="0.75"
             android:id="@+id/textView_branch_year"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -98,11 +133,12 @@
             android:layout_centerHorizontal="true"
             android:fontFamily="sans-serif"
             android:text="Branch: CSE, 3rd Year"
-            android:textColor="@android:color/black"
-            android:textSize="14sp"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
             app:fontFamily="@font/exo_light" />
 
     </RelativeLayout>
+
     <TextView
         android:id="@+id/textView_copyright"
         android:layout_width="wrap_content"
