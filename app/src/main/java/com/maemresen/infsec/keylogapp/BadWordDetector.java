@@ -22,8 +22,6 @@ public class BadWordDetector {
         filterList.add( "damn" );
         filterList.add( "dick" );
         filterList.add( "fuck" );
-        filterList.add( "fuckoff" );
-        filterList.add( "fuckyou" );
         filterList.add( "hell" );
         filterList.add( "holy shit" );
         filterList.add( "piss" );

