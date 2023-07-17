@@ -30,7 +30,7 @@ public class KeyboardActivityFragment extends Fragment {
     private BadWordsAdapter adapter;
     private List<String> textRecordsList;
     
-    private LottieAnimationView loadingAnimationView;
+    private LottieAnimationView loadingAnimationView,jumping_fish,waterBottom,waterTop;
     private boolean isLoading;
     private SwipeRefreshLayout swipeRefreshLayout;
     
@@ -41,14 +41,16 @@ public class KeyboardActivityFragment extends Fragment {
     @Override
     public View onCreateView( @NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState ) {
         View rootView = inflater.inflate( R.layout.keyboardactivity_layout, container, false );
-        
-        
+    
+        jumping_fish = rootView.findViewById( R.id.jumping_fish_keyboard );
         recyclerView = rootView.findViewById( R.id.TextRecordsrecycler );
+        waterBottom = rootView.findViewById( R.id.waterBottom );
+        waterTop = rootView.findViewById( R.id.waterTop );
         recyclerView.setLayoutManager( new LinearLayoutManager( getContext() ) );
         textRecordsList = new ArrayList<>();
         adapter = new BadWordsAdapter( textRecordsList );
         recyclerView.setAdapter( adapter );
-        loadingAnimationView = rootView.findViewById( R.id.animationTextRecords );
+        loadingAnimationView = rootView.findViewById( R.id.refreshKeyboard );
         
         
         Bundle bundle = getArguments();
@@ -77,14 +79,14 @@ public class KeyboardActivityFragment extends Fragment {
     
     private void refreshData( String ownerName, String databaseName ) {
         isLoading = true;
-        
-        recyclerView.setVisibility( View.GONE );
-        // Update the fragment data using the existing ownerName and databaseName variables
-        UpdateFragment( ownerName, databaseName );
-        
-        // Start the animation
+    
         loadingAnimationView.setVisibility( View.VISIBLE );
         loadingAnimationView.playAnimation();
+        recyclerView.setVisibility( View.GONE );
+        waterBottom.setVisibility( View.VISIBLE );
+        waterTop.setVisibility( View.VISIBLE );
+        UpdateFragment( ownerName, databaseName );
+        jumping_fish.setVisibility( View.GONE );
         
         // Simulate a delay before stopping the refresh animation
         new Handler().postDelayed( new Runnable() {
@@ -93,6 +95,7 @@ public class KeyboardActivityFragment extends Fragment {
                 swipeRefreshLayout.setRefreshing( false );
                 loadingAnimationView.setVisibility( View.GONE );
                 loadingAnimationView.cancelAnimation();
+                jumping_fish.setVisibility( View.VISIBLE );
                 recyclerView.setVisibility( View.VISIBLE );
                 
             }

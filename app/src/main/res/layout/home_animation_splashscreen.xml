@@ -5,12 +5,13 @@
     android:layout_height="match_parent"
     android:background="#FDFDFD">
 
+
     <ImageView
         android:id="@+id/ParentalEye"
         android:layout_width="300dp"
         android:layout_height="200dp"
-        android:src="@drawable/parental_eye_rise"
         android:layout_marginBottom="50dp"
+        android:src="@drawable/parental_eye_rise"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

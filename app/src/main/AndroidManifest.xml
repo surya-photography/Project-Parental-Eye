@@ -19,6 +19,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.KeyloggerParent"
         tools:targetApi="31">
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -65,5 +66,9 @@
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
     </application>
+
+    <queries>
+        <package android:name="com.google.android.apps.maps" />
+    </queries>
 
 </manifest>

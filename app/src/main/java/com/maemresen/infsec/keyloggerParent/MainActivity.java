@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -41,7 +42,10 @@ public class MainActivity extends AppCompatActivity {
     private String selectedOwnerName;
     private String selectedDate;
     private ImageView arrowImageView;
-    private View deviceOptionsView;
+    private View deviceOptionsView,viewblur;
+    
+    private LottieAnimationView BigBubbles;
+  
     private boolean isOptionsVisible = false;
     
     private TabAdapter tabAdapter;
@@ -52,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_main );
         
+        viewblur = findViewById( R.id.viewblur );
+        BigBubbles = findViewById( R.id.BigBubbles );
         arrowImageView = findViewById( R.id.arrowImageView );
         deviceOptionsView = findViewById( R.id.device_options );
         arrowImageView.setImageResource( R.drawable.menu );
@@ -63,9 +69,13 @@ public class MainActivity extends AppCompatActivity {
                 if (isOptionsVisible) {
                     slideUp( deviceOptionsView );
                     arrowImageView.setImageResource( R.drawable.menu );
+                    viewblur.setVisibility( View.GONE );
+                    BigBubbles.setVisibility( View.GONE );
                 } else {
                     slideDown( deviceOptionsView );
                     arrowImageView.setImageResource( R.drawable.cross );
+                    BigBubbles.setVisibility( View.VISIBLE );
+                    viewblur.setVisibility( View.VISIBLE );
                 }
                 isOptionsVisible = !isOptionsVisible;
             }
@@ -76,10 +86,10 @@ public class MainActivity extends AppCompatActivity {
         tabAdapter = new TabAdapter( getSupportFragmentManager() );
         viewPager.setAdapter( tabAdapter );
         
-        // Create custom tab views
+        // Create custom tab viewsa
         int[] tabIcons = { R.drawable.ic_tab_all_records,
                 R.drawable.ic_tab_keyboard_activity, R.drawable.ic_tab_caught_using_badwords,
-                R.drawable.maps, R.drawable.acknowledgement };
+                R.drawable.location_new, R.drawable.acknowledgement };
         String[] tabTitles = { "All Records", "Keyboard Activity", "Using BadWords", "Realtime " +
                 "Location", "Credits" };
         
@@ -187,6 +197,7 @@ public class MainActivity extends AppCompatActivity {
     }
     
     private void updateFragments( String ownerName, String date ) {
+        
         Bundle bundle = new Bundle();
         bundle.putString( "OWNER_NAME", ownerName );
         bundle.putString( "SELECTED_DATE", date );

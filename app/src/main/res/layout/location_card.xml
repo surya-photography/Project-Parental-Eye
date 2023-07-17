@@ -30,9 +30,11 @@
             android:textSize="20sp" />
 
         <ImageView
+            android:alpha="0.85"
             android:id="@+id/directions"
             android:layout_width="28dp"
             android:layout_height="28dp"
+            android:layout_marginLeft="10dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_gravity="right"

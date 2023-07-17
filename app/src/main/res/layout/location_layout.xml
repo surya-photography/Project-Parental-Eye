@@ -12,24 +12,72 @@
         android:background="@color/white">
 
         <com.airbnb.lottie.LottieAnimationView
-            android:id="@+id/animationLocation"
+            android:id="@+id/jumping_fish_location"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone"
+            android:layout_height="500dp"
+            android:layout_gravity="center"
+            android:alpha="0.9"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@+id/Locaionrecycler"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/Locaionrecycler"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/jumping_fish" />
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/refreshLocation"
+            android:layout_width="310dp"
+            android:layout_height="310dp"
+            android:scaleType="fitCenter"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/waterBottom"
+            app:layout_constraintEnd_toEndOf="@+id/jumping_fish_location"
+            app:layout_constraintStart_toStartOf="@+id/jumping_fish_location"
+            app:layout_constraintTop_toBottomOf="@+id/waterTop"
             app:lottie_autoPlay="false"
             app:lottie_loop="true"
-            app:lottie_rawRes="@raw/skeleton_card" />
+            app:lottie_rawRes="@raw/refresh" />
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/waterBottom"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:alpha="0.9"
+            android:scaleType="fitStart"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/water_bottom_screen" />
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/waterTop"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:alpha="0.9"
+            android:scaleType="fitEnd"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/water_top_screen" />
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/Locaionrecycler"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:paddingVertical="10dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0"
-            app:layout_constraintVertical_chainStyle="packed" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

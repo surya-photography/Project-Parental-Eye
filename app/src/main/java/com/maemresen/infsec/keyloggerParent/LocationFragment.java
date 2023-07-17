@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.airbnb.lottie.LottieAnimationView;
-import com.airbnb.lottie.LottieDrawable;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,10 +27,10 @@ import java.util.List;
 public class LocationFragment extends Fragment {
     private DatabaseReference allRecordsRef;
     private RecyclerView recyclerView;
-    private BadWordsAdapter adapter;
+    private LocationAdapter adapter;
     private List<String> textRecordsList;
     
-    private LottieAnimationView loadingAnimationView;
+    private LottieAnimationView loadingAnimationView,jumping_fish,waterBottom,waterTop;
     private boolean isLoading;
     private SwipeRefreshLayout swipeRefreshLayout;
     
@@ -43,14 +42,15 @@ public class LocationFragment extends Fragment {
     public View onCreateView( @NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState ) {
         View rootView = inflater.inflate( R.layout.location_layout, container, false );
         
-        
+        jumping_fish = rootView.findViewById( R.id.jumping_fish_location );
         recyclerView = rootView.findViewById( R.id.Locaionrecycler );
+        waterBottom = rootView.findViewById( R.id.waterBottom );
+        waterTop = rootView.findViewById( R.id.waterTop );
         recyclerView.setLayoutManager( new LinearLayoutManager( getContext() ) );
         textRecordsList = new ArrayList<>();
-        adapter = new BadWordsAdapter( textRecordsList );
+        adapter = new LocationAdapter( textRecordsList );
         recyclerView.setAdapter( adapter );
-        loadingAnimationView = rootView.findViewById( R.id.animationLocation );
-
+        loadingAnimationView = rootView.findViewById( R.id.refreshLocation );
         
         
         Bundle bundle = getArguments();
@@ -67,7 +67,7 @@ public class LocationFragment extends Fragment {
             public void onRefresh() {
                 // Perform the refresh operation
                 if (ownerName != null || selectedDate != null) {
-                    refreshData(ownerName,selectedDate);
+                    refreshData( ownerName, selectedDate );
                 }
             }
         } );
@@ -76,28 +76,32 @@ public class LocationFragment extends Fragment {
         return rootView;
     }
     
-    private void refreshData(String ownerName, String databaseName) {
+    private void refreshData( String ownerName, String databaseName ) {
         isLoading = true;
-    
-        recyclerView.setVisibility(View.GONE);
-        // Update the fragment data using the existing ownerName and databaseName variables
-        UpdateFragment(ownerName, databaseName);
+        
+        loadingAnimationView.setVisibility( View.VISIBLE );
+        loadingAnimationView.playAnimation();
+        recyclerView.setVisibility( View.GONE );
+        waterBottom.setVisibility( View.VISIBLE );
+        waterTop.setVisibility( View.VISIBLE );
+        UpdateFragment( ownerName, databaseName );
+        jumping_fish.setVisibility( View.GONE );
         
         // Start the animation
-        loadingAnimationView.setVisibility(View.VISIBLE);
-        loadingAnimationView.playAnimation();
+        
         
         // Simulate a delay before stopping the refresh animation
-        new Handler().postDelayed(new Runnable() {
+        new Handler().postDelayed( new Runnable() {
             @Override
             public void run() {
-                swipeRefreshLayout.setRefreshing(false);
-                loadingAnimationView.setVisibility(View.GONE);
+                swipeRefreshLayout.setRefreshing( false );
+                loadingAnimationView.setVisibility( View.GONE );
                 loadingAnimationView.cancelAnimation();
-                recyclerView.setVisibility(View.VISIBLE);
-    
+                jumping_fish.setVisibility( View.VISIBLE );
+                recyclerView.setVisibility( View.VISIBLE );
+                
             }
-        }, 2500); // Delay for 2.5 seconds
+        }, 2500 ); // Delay for 2.5 seconds
     }
     
     
@@ -137,7 +141,7 @@ public class LocationFragment extends Fragment {
     public void onResume() {
         super.onResume();
         
-        UpdateFragment(ownerName, selectedDate);
+        UpdateFragment( ownerName, selectedDate );
         adapter.notifyDataSetChanged();
     }
 }

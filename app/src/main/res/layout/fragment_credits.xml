@@ -4,7 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white">
-
+<View
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/blur_black"
+    android:alpha="0.5"/>
     <View
         android:id="@+id/view2"
         android:layout_width="350dp"
@@ -20,7 +24,7 @@
         android:id="@+id/blur"
         android:layout_width="450dp"
         android:layout_height="400dp"
-        android:alpha="0.55"
+        android:alpha="0.6"
         android:background="@drawable/blur2"
         android:scaleType="fitXY"
         app:layout_constraintBottom_toTopOf="@+id/textView_copyright"
@@ -88,7 +92,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:alpha="0.8"
+        android:alpha="0.85"
         android:fontFamily="sans-serif-medium"
         android:gravity="center"
         android:padding="10dp"
