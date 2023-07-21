@@ -34,8 +34,8 @@ public class KeyboardActivityFragment extends Fragment {
     private boolean isLoading;
     private SwipeRefreshLayout swipeRefreshLayout;
     
-    private static String ownerName = "";
-    private static String selectedDate = "";
+    public static String ownerName = "";
+    public static String selectedDate = "";
     
     @Nullable
     @Override
@@ -140,6 +140,6 @@ public class KeyboardActivityFragment extends Fragment {
         
         
         UpdateFragment( ownerName, selectedDate );
-        adapter.notifyDataSetChanged();
+        
     }
 }

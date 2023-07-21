@@ -34,8 +34,8 @@ public class LocationFragment extends Fragment {
     private boolean isLoading;
     private SwipeRefreshLayout swipeRefreshLayout;
     
-    private static String ownerName = "";
-    private static String selectedDate = "";
+    public static String ownerName = "";
+    public static String selectedDate = "";
     
     @Nullable
     @Override

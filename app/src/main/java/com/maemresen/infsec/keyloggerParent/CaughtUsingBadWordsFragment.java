@@ -34,8 +34,8 @@ public class CaughtUsingBadWordsFragment extends Fragment {
     private boolean isLoading;
     private SwipeRefreshLayout swipeRefreshLayout;
     
-    private static String ownerName = "";
-    private static String selectedDate = "";
+    public static String ownerName = "";
+    public static String selectedDate = "";
     
     @Nullable
     @Override
@@ -141,6 +141,5 @@ public class CaughtUsingBadWordsFragment extends Fragment {
         super.onResume();
         
         UpdateFragment( ownerName, selectedDate );
-        adapter.notifyDataSetChanged();
     }
 }
