@@ -81,7 +81,7 @@
         app:layout_constraintTop_toTopOf="@+id/textView" />
 
     <ImageView
-        android:id="@+id/notifications"
+        android:id="@+id/ParentalLock"
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:layout_marginRight="15dp"
@@ -113,5 +113,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+
+    <include
+        android:id="@+id/lockchildlayout"
+        layout="@layout/lock_child"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

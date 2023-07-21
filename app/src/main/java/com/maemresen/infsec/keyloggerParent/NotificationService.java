@@ -16,6 +16,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -27,8 +28,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.RemoteMessage;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 public class NotificationService extends Service implements Application.ActivityLifecycleCallbacks {
     
@@ -38,6 +42,9 @@ public class NotificationService extends Service implements Application.Activity
             "notification if your child types any bad word in his device";
     
     private static final int NOTIFICATION_ID = 1;
+    
+    private static final int NOTIFICATION_ID_FOREGROUND = 1;
+    private static final int NOTIFICATION_ID_BACKGROUND = 2;
     
     private static final long NOTIFICATION_INTERVAL =  30 * 1000; // 30 seconds
     private Date lastNotificationTime = null;
@@ -61,8 +68,8 @@ public class NotificationService extends Service implements Application.Activity
         // Create a notification for the foreground service
         Notification notification = buildNotification();
         
-        // Start the service as a foreground service
-        startForeground( NOTIFICATION_ID, notification );
+    
+        startForeground(NOTIFICATION_ID, notification);
         
         // Register the activity lifecycle callbacks
         Application application = (Application) getApplicationContext();
@@ -122,6 +129,10 @@ public class NotificationService extends Service implements Application.Activity
             ownerName = bundle.getString( "OWNER_NAME" );
             selectedDate = bundle.getString( "SELECTED_DATE" );
         }
+    
+        Date now = DateTimeHelper.getCurrentDay();
+        SimpleDateFormat dateFormat = new SimpleDateFormat( "dd-MM-yyyy", Locale.getDefault() );
+        String selectedDate = dateFormat.format( now );
         
         // Initialize Firebase database reference
         DatabaseReference allRecordsRef = FirebaseDatabase.getInstance().getReference( "Keylogger: User Data" )
@@ -181,6 +192,16 @@ public class NotificationService extends Service implements Application.Activity
         
         Notification notification = builder.build();
         notificationManager.notify( NOTIFICATION_ID, notification );
+    }
+    
+    private boolean isNotificationAccessGranted() {
+        String packageName = getPackageName();
+        String flat = Settings.Secure.getString(getContentResolver(), "enabled_notification_listeners");
+        return flat != null && flat.contains(packageName);
+    }
+    
+    private boolean isNotificationChannelRequired() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
     }
     
     

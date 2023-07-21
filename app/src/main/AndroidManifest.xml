@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
 
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -47,9 +48,7 @@
             android:name=".NotificationService"
             android:enabled="true"
             android:exported="false"
-            android:foregroundServiceType="dataSync|location|connectedDevice"
-            android:permission="android.permission.POST_NOTIFICATIONS" />
-
+            android:foregroundServiceType="dataSync|location|connectedDevice" />
 
         <service
             android:name="com.google.firebase.components.ComponentDiscoveryService"

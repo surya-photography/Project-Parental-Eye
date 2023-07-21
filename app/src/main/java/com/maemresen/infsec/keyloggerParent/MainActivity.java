@@ -4,14 +4,20 @@ import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -41,15 +47,33 @@ public class MainActivity extends AppCompatActivity {
     private ArrayAdapter<String> dateAdapter;
     private String selectedOwnerName;
     private String selectedDate;
-    private ImageView arrowImageView;
-    private View deviceOptionsView,viewblur;
+    private ImageView arrowImageView, ParentalLock, closeChildLock;
+    private View deviceOptionsView, viewblur, lockchildlayout;
     
     private LottieAnimationView BigBubbles;
-  
+    
     private boolean isOptionsVisible = false;
     
     private TabAdapter tabAdapter;
     private ViewPager viewPager;
+    
+    private Button lockButton;
+    private String lockDurationString;
+    private EditText lockduration;
+    private boolean isPhoneLocked = false;
+    private long lockDurationMillis = 0L;
+    private long lastLockButtonPressTime = 0L;
+    private final Handler handler = new Handler();
+    private Runnable unlockRunnable = new Runnable() {
+        @Override
+        public void run() {
+            isPhoneLocked = false;
+            lockButton.setText( "Lock" );
+            lockButton.setBackgroundResource( R.drawable.button_signin );
+            lockButton.setEnabled( true );
+            Toast.makeText( MainActivity.this, "Phone is now unlocked", Toast.LENGTH_SHORT ).show();
+        }
+    };
     
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -62,6 +86,10 @@ public class MainActivity extends AppCompatActivity {
         deviceOptionsView = findViewById( R.id.device_options );
         arrowImageView.setImageResource( R.drawable.menu );
         deviceOptionsView.setVisibility( View.INVISIBLE );
+        lockduration = findViewById( R.id.lockduration );
+        ParentalLock = findViewById( R.id.ParentalLock );
+        lockchildlayout = findViewById( R.id.lockchildlayout );
+        closeChildLock = findViewById( R.id.closeChildLock );
         
         arrowImageView.setOnClickListener( new View.OnClickListener() {
             @Override
@@ -80,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
                 isOptionsVisible = !isOptionsVisible;
             }
         } );
+        
         
         TabLayout tabLayout = findViewById( R.id.tab_layout );
         viewPager = findViewById( R.id.view_pager );
@@ -194,6 +223,55 @@ public class MainActivity extends AppCompatActivity {
             }
         } );
         
+        ParentalLock.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick( View view ) {
+                lockchildlayout.setVisibility( View.VISIBLE );
+            }
+        } );
+        closeChildLock.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick( View view ) {
+                lockchildlayout.setVisibility( View.GONE );
+            }
+        } );
+        
+        
+        lockButton = findViewById( R.id.lockButton );
+        lockButton.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick( View v ) {
+                if (isPhoneLocked) {
+                    Toast.makeText( MainActivity.this,
+                            "Phone is already locked\n\tWait for " + lockDurationString + " minute" +
+                                    "(s)",
+                            Toast.LENGTH_SHORT ).show();
+                } else {
+                    // Phone is not locked, so lock it
+                    lockDurationString = "1";
+                    lockDurationMillis = 60 * 1000;
+                    
+                    // Extract lock duration from the EditText and convert it to milliseconds
+                    String durationInput = lockduration.getText().toString().trim();
+                    if (!durationInput.isEmpty()) {
+                        lockDurationString = durationInput;
+                        lockDurationMillis = Long.parseLong( lockDurationString ) * 60 * 1000;
+                    }
+                    
+                    // Disable the lock button and start the lock process
+                    lockButton.setText( "Locked Sucessfully" );
+                    lockButton.setEnabled( false );
+                    lockButton.setBackgroundResource( R.drawable.google_gradient );
+                    Toast.makeText( MainActivity.this, "Phone is locked for " + lockDurationString + " minute(s)", Toast.LENGTH_SHORT ).show();
+                    
+                    // Set the phone as locked and schedule the unlock task
+                    isPhoneLocked = true;
+                    lastLockButtonPressTime = SystemClock.elapsedRealtime();
+                    handler.postDelayed( unlockRunnable, lockDurationMillis );
+                }
+            }
+        } );
+        
     }
     
     private void updateFragments( String ownerName, String date ) {
@@ -201,17 +279,18 @@ public class MainActivity extends AppCompatActivity {
         Bundle bundle = new Bundle();
         bundle.putString( "OWNER_NAME", ownerName );
         bundle.putString( "SELECTED_DATE", date );
-    
-        Intent serviceIntent = new Intent(MainActivity.this, NotificationService.class);
-        serviceIntent.putExtras(bundle);
+        
+        Intent serviceIntent = new Intent( MainActivity.this, NotificationService.class );
+        serviceIntent.putExtras( bundle );
+        
         
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(serviceIntent);
+            startForegroundService( serviceIntent );
         } else {
-            startService(serviceIntent);
+            startService( serviceIntent );
         }
-    
-    
+        
+        
         // Update all fragments in the ViewPager
         FragmentManager fragmentManager = getSupportFragmentManager();
         List<Fragment> fragments = fragmentManager.getFragments();
