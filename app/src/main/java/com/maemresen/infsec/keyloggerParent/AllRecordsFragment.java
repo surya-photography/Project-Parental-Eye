@@ -1,5 +1,9 @@
 package com.maemresen.infsec.keyloggerParent;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -36,6 +40,7 @@ public class AllRecordsFragment extends Fragment {
     
     public static String ownerName = "";
     public static String selectedDate = "";
+    public static String DataBaseName = "";
     
     @Nullable
     @Override
@@ -51,42 +56,40 @@ public class AllRecordsFragment extends Fragment {
         adapter = new BadWordsAdapter( textRecordsList );
         recyclerView.setAdapter( adapter );
         loadingAnimationView = rootView.findViewById( R.id.refreshAllRecords );
-        
-        
+    
+    
         Bundle bundle = getArguments();
         if (bundle != null) {
-            ownerName = bundle.getString( "OWNER_NAME" );
-            selectedDate = bundle.getString( "SELECTED_DATE" );
+            ownerName = bundle.getString("OWNER_NAME");
+            selectedDate = bundle.getString("SELECTED_DATE");
+            DataBaseName = bundle.getString("DatabaseName");
+            UpdateFragment(ownerName, selectedDate, DataBaseName);
         }
-        
-        UpdateFragment( ownerName, selectedDate );
-        
-        swipeRefreshLayout = rootView.findViewById( R.id.swipeAllRecords );
-        swipeRefreshLayout.setOnRefreshListener( new SwipeRefreshLayout.OnRefreshListener() {
+    
+        swipeRefreshLayout = rootView.findViewById(R.id.swipeAllRecords);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 // Perform the refresh operation
                 if (ownerName != null || selectedDate != null) {
-                    refreshData( ownerName, selectedDate );
+                    refreshData(ownerName, selectedDate, DataBaseName);
                 }
-                
+            
             }
-        } );
-        
+        });
         
         return rootView;
     }
     
-    private void refreshData( String ownerName, String databaseName ) {
+    private void refreshData(String ownerName, String databaseName, String DataBaseName) {
         isLoading = true;
-    
-    
-        loadingAnimationView.setVisibility( View.VISIBLE );
+        
+        loadingAnimationView.setVisibility(View.VISIBLE);
         loadingAnimationView.playAnimation();
-        recyclerView.setVisibility( View.GONE );
-        waterBottom.setVisibility( View.VISIBLE );
-        waterTop.setVisibility( View.VISIBLE );
-        UpdateFragment( ownerName, databaseName );
+        recyclerView.setVisibility(View.GONE);
+        waterBottom.setVisibility(View.VISIBLE);
+        waterTop.setVisibility(View.VISIBLE);
+        UpdateFragment(ownerName, databaseName, DataBaseName);
         jumping_fish.setVisibility( View.GONE );
         
         // Simulate a delay before stopping the refresh animation
@@ -105,9 +108,9 @@ public class AllRecordsFragment extends Fragment {
     }
     
     
-    public void UpdateFragment( String ownerName, String databaseName ) {
+    public void UpdateFragment(String ownerName, String databaseName, String DataBaseName) {
         
-        allRecordsRef = FirebaseDatabase.getInstance().getReference( "Keylogger: User Data" )
+        allRecordsRef = FirebaseDatabase.getInstance().getReference(DataBaseName)
                 .child( ownerName )
                 .child( databaseName )
                 .child( "All Records" );
@@ -140,6 +143,6 @@ public class AllRecordsFragment extends Fragment {
     public void onResume() {
         super.onResume();
         
-        UpdateFragment( ownerName, selectedDate );
+        UpdateFragment(ownerName, selectedDate, DataBaseName);
     }
 }

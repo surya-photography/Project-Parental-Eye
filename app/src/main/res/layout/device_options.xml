@@ -1,23 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:id="@+id/spinnerLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center">
+
+            <TextView
+                android:id="@+id/parentalIDTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Parental ID:"
+                android:layout_marginRight="20dp"
+                android:textColor="#ffffff"
+                android:textStyle="bold"
+                android:layout_centerVertical="true"/>
+            <TextView
+                android:id="@+id/parentalID"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Unknown User"
+                android:layout_toRightOf="@id/parentalIDTitle"
+                android:textStyle="normal|italic"
+                android:textColor="#E6FFFFFF"
+                android:paddingVertical="5dp"
+                android:paddingHorizontal="10dp"
+                android:layout_centerVertical="true"
+                android:background="@drawable/background_border"/>
+        </RelativeLayout>
+
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
             app:cardBackgroundColor="#FFFFFF"
             app:cardCornerRadius="20dp"
             app:cardElevation="4dp"
@@ -25,7 +52,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/cardview_background"
@@ -36,26 +63,31 @@
                     android:id="@+id/phoneLable"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Phone:"
+                    android:layout_centerVertical="true"
+                    android:text="Phone: "
                     android:textColor="#000000"
                     android:textSize="16sp"
                     android:textStyle="bold|italic" />
 
                 <Spinner
-                    android:background="@drawable/background_border"
-                    android:padding="5dp"
                     android:id="@+id/ownerSpinner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
                     android:layout_marginTop="8dp"
+                    android:layout_toRightOf="@+id/phoneLable"
+                    android:background="@drawable/background_border"
+                    android:padding="5dp"
                     android:textAlignment="textStart" />
 
-            </LinearLayout>
+            </RelativeLayout>
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
             app:cardBackgroundColor="#FFFFFF"
             app:cardCornerRadius="20dp"
             app:cardElevation="4dp"
@@ -63,7 +95,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/cardview_background"
@@ -74,22 +106,39 @@
                     android:id="@+id/dateLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
                     android:text="Date:"
                     android:textColor="#000000"
                     android:textSize="16sp"
                     android:textStyle="bold|italic" />
 
                 <Spinner
-                    android:background="@drawable/background_border"
-                    android:padding="5dp"
                     android:id="@+id/dateSpinner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="20dp"
                     android:layout_marginTop="8dp"
+                    android:layout_toRightOf="@+id/dateLabel"
+                    android:background="@drawable/background_border"
+                    android:padding="5dp"
                     android:textAlignment="textStart" />
 
-            </LinearLayout>
+            </RelativeLayout>
         </androidx.cardview.widget.CardView>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/logoutButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/google_gradient"
+            android:paddingHorizontal="10dp"
+            android:text="Logout"
+            android:textColor="#ffffff" />
+
     </LinearLayout>
 
 </RelativeLayout>

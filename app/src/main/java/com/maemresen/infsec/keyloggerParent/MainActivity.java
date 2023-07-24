@@ -2,12 +2,14 @@ package com.maemresen.infsec.keyloggerParent;
 
 import android.animation.ObjectAnimator;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.provider.Settings;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -23,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
 import com.airbnb.lottie.LottieAnimationView;
@@ -56,8 +59,11 @@ public class MainActivity extends AppCompatActivity {
     
     private TabAdapter tabAdapter;
     private ViewPager viewPager;
+    private TextView parentalID;
     
-    private Button lockButton;
+    private String DataBaseReference = "";
+    
+    private Button lockButton, logoutButton;
     private String lockDurationString;
     private EditText lockduration;
     private boolean isPhoneLocked = false;
@@ -79,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_main );
+        setRequestedOrientation( ActivityInfo.SCREEN_ORIENTATION_PORTRAIT );
         
         viewblur = findViewById( R.id.viewblur );
         BigBubbles = findViewById( R.id.BigBubbles );
@@ -90,6 +97,8 @@ public class MainActivity extends AppCompatActivity {
         ParentalLock = findViewById( R.id.ParentalLock );
         lockchildlayout = findViewById( R.id.lockchildlayout );
         closeChildLock = findViewById( R.id.closeChildLock );
+        logoutButton = findViewById( R.id.logoutButton );
+        parentalID = findViewById( R.id.parentalID );
         
         arrowImageView.setOnClickListener( new View.OnClickListener() {
             @Override
@@ -171,7 +180,13 @@ public class MainActivity extends AppCompatActivity {
         dateAdapter.setDropDownViewResource( android.R.layout.simple_spinner_dropdown_item );
         dateSpinner.setAdapter( dateAdapter );
         
-        DatabaseReference ownerRef = FirebaseDatabase.getInstance().getReference( "Keylogger: User Data" );
+        
+        SharedPreferences preference = getSharedPreferences( "UserLoginActivity", MODE_PRIVATE );
+        String ParentalID = preference.getString( "UserEmailPref", "Unknown User" );
+        parentalID.setText( ParentalID );
+        DataBaseReference = "Keylogger: User ( " + ParentalID + " )";
+        
+        DatabaseReference ownerRef = FirebaseDatabase.getInstance().getReference( DataBaseReference );
         ownerRef.addValueEventListener( new ValueEventListener() {
             @Override
             public void onDataChange( @NonNull DataSnapshot dataSnapshot ) {
@@ -272,15 +287,48 @@ public class MainActivity extends AppCompatActivity {
             }
         } );
         
+        
+        logoutButton.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick( View view ) {
+                SharedPreferences preference = getSharedPreferences( "UserLoginActivity", MODE_PRIVATE );
+                SharedPreferences.Editor editor = preference.edit();
+                editor.putBoolean( "login", false );
+                editor.remove("UserEmailPref");
+                editor.apply();
+                
+                Toast customToast = new Toast( MainActivity.this );
+                customToast.setDuration( Toast.LENGTH_SHORT );
+                // Inflate the custom layout for the Toast
+                LayoutInflater inflater = LayoutInflater.from( MainActivity.this );
+                View toastView = inflater.inflate( R.layout.costum_toast, null );
+                customToast.setView( toastView );
+                customToast.setGravity( Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0 );
+                customToast.show();
+                
+                Intent logoutIntent = new Intent( MainActivity.this, SignInUpActivity.class );
+                startActivity( logoutIntent );
+                finish();
+                
+            }
+        } );
+        
     }
     
     private void updateFragments( String ownerName, String date ) {
+    
+        SharedPreferences preference = getSharedPreferences( "UserLoginActivity", MODE_PRIVATE );
+        String ParentalID = preference.getString( "UserEmailPref", "Unknown User" );
+        String DataBaseReference = "Keylogger: User ( " + ParentalID + " )";
+        
         
         Bundle bundle = new Bundle();
         bundle.putString( "OWNER_NAME", ownerName );
         bundle.putString( "SELECTED_DATE", date );
+        bundle.putString( "DatabaseName",DataBaseReference );
         
         Intent serviceIntent = new Intent( MainActivity.this, NotificationService.class );
+        serviceIntent.putExtra("OWNER_NAME", ownerName);
         serviceIntent.putExtras( bundle );
         
         
@@ -291,23 +339,23 @@ public class MainActivity extends AppCompatActivity {
         }
         
         
-        // Update all fragments in the ViewPager
+//        // Update all fragments in the ViewPager
         FragmentManager fragmentManager = getSupportFragmentManager();
         List<Fragment> fragments = fragmentManager.getFragments();
-        
+
         for (Fragment fragment : fragments) {
             if (fragment instanceof AllRecordsFragment) {
                 ( (AllRecordsFragment) fragment ).setArguments( bundle );
-                ( (AllRecordsFragment) fragment ).UpdateFragment( ownerName, date );
+                ( (AllRecordsFragment) fragment ).UpdateFragment(ownerName, date, DataBaseReference);
             } else if (fragment instanceof KeyboardActivityFragment) {
                 ( (KeyboardActivityFragment) fragment ).setArguments( bundle );
-                ( (KeyboardActivityFragment) fragment ).UpdateFragment( ownerName, date );
+                ( (KeyboardActivityFragment) fragment ).UpdateFragment( ownerName, date,DataBaseReference);
             } else if (fragment instanceof CaughtUsingBadWordsFragment) {
                 ( (CaughtUsingBadWordsFragment) fragment ).setArguments( bundle );
-                ( (CaughtUsingBadWordsFragment) fragment ).UpdateFragment( ownerName, date );
+                ( (CaughtUsingBadWordsFragment) fragment ).UpdateFragment( ownerName, date,DataBaseReference );
             } else if (fragment instanceof LocationFragment) {
                 ( (LocationFragment) fragment ).setArguments( bundle );
-                ( (LocationFragment) fragment ).UpdateFragment( ownerName, date );
+                ( (LocationFragment) fragment ).UpdateFragment( ownerName, date,DataBaseReference );
             }
         }
         
@@ -315,7 +363,12 @@ public class MainActivity extends AppCompatActivity {
     
     
     private void fetchDatesForOwner( String ownerName ) {
-        DatabaseReference datesRef = FirebaseDatabase.getInstance().getReference( "Keylogger: User Data" )
+        
+        SharedPreferences preference = getSharedPreferences( "UserLoginActivity", MODE_PRIVATE );
+        String ParentalID = preference.getString( "UserEmailPref", "Unknown User" );
+        String DataBaseReference = "Keylogger: User ( " + ParentalID + " )";
+        
+        DatabaseReference datesRef = FirebaseDatabase.getInstance().getReference( DataBaseReference )
                 .child( ownerName );
         
         datesRef.addListenerForSingleValueEvent( new ValueEventListener() {

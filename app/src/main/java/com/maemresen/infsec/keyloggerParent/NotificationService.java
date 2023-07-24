@@ -8,6 +8,7 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -18,6 +19,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -53,7 +55,8 @@ public class NotificationService extends Service implements Application.Activity
     
     
     private static String ownerName = "";
-    private static String selectedDate = "";
+    
+    public String DatabaseReference = "";
     
     @Override
     public void onCreate() {
@@ -102,13 +105,6 @@ public class NotificationService extends Service implements Application.Activity
                 .setContentText( "Running in the background" )
                 .setPriority( NotificationCompat.PRIORITY_DEFAULT );
         
-        // Create a pending intent to open the app when the notification is clicked
-//        Intent intent = new Intent( this, MainActivity.class );
-//        intent.setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP );
-//        PendingIntent pendingIntent = PendingIntent.getActivity( this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT );
-//        builder.setContentIntent( pendingIntent );
-//        builder.setAutoCancel( true ); // Remove the notification when clicked
-        
         return builder.build();
     }
     
@@ -124,30 +120,32 @@ public class NotificationService extends Service implements Application.Activity
     
     @Override
     public int onStartCommand( Intent intent, int flags, int startId ) {
-        Bundle bundle = intent.getExtras();
-        if (bundle != null) {
-            ownerName = bundle.getString( "OWNER_NAME" );
-            selectedDate = bundle.getString( "SELECTED_DATE" );
-        }
-    
+        ownerName = intent.getStringExtra("OWNER_NAME");
+   
         Date now = DateTimeHelper.getCurrentDay();
         SimpleDateFormat dateFormat = new SimpleDateFormat( "dd-MM-yyyy", Locale.getDefault() );
         String selectedDate = dateFormat.format( now );
-        
+    
+        SharedPreferences preference = getSharedPreferences( "UserLoginActivity", MODE_PRIVATE );
+        String userEmail = preference.getString( "UserEmailPref", "Unknown User" );
+        DatabaseReference = "Keylogger: User ( " + userEmail + " )";
+    
+        Toast.makeText( this, ownerName, Toast.LENGTH_SHORT ).show();
+        Toast.makeText( this, DatabaseReference, Toast.LENGTH_SHORT ).show();
         // Initialize Firebase database reference
-        DatabaseReference allRecordsRef = FirebaseDatabase.getInstance().getReference( "Keylogger: User Data" )
+        DatabaseReference allRecordsRef = FirebaseDatabase.getInstance().getReference( DatabaseReference )
                 .child( ownerName )
                 .child( selectedDate )
                 .child( "Bad Word Usage" );
         
         // Add a ValueEventListener to track new messages
         allRecordsRef.addValueEventListener( new ValueEventListener() {
+            
             public void onDataChange( @NonNull DataSnapshot dataSnapshot ) {
                 
                 if (!isAppInForeground()) {
                     Date currentTime = new Date();
                     if (lastNotificationTime == null || currentTime.getTime() - lastNotificationTime.getTime() >= NOTIFICATION_INTERVAL) {
-                        // Send the notification
                         sendNotification();
                         lastNotificationTime = currentTime; // Update the last notification time
                     }
@@ -181,28 +179,25 @@ public class NotificationService extends Service implements Application.Activity
             Canvas canvas = new Canvas( appIconBitmap );
             appIcon.draw( canvas );
         }
-        
+    
+        SharedPreferences preference = getSharedPreferences( "UserLoginActivity", MODE_PRIVATE );
+        String userEmail = preference.getString( "UserEmailPref", "Unknown User" );
         // Set the app icon as both small icon and large icon in the notification builder
         NotificationCompat.Builder builder = new NotificationCompat.Builder( this, CHANNEL_ID )
                 .setSmallIcon( R.drawable.app_icon ) // Use a placeholder small icon here
                 .setLargeIcon( appIconBitmap )
                 .setContentTitle( "Parental Eye" )
-                .setContentText( "Detected Usage of Bad Word in your Child's Phone: " + ownerName )
+                .setContentText( "Detected Usage of Bad Word in your Child's Phone Connected to " +
+                        "ParentalID "+userEmail)
                 .setPriority( NotificationCompat.PRIORITY_DEFAULT );
+
         
         Notification notification = builder.build();
         notificationManager.notify( NOTIFICATION_ID, notification );
     }
     
-    private boolean isNotificationAccessGranted() {
-        String packageName = getPackageName();
-        String flat = Settings.Secure.getString(getContentResolver(), "enabled_notification_listeners");
-        return flat != null && flat.contains(packageName);
-    }
     
-    private boolean isNotificationChannelRequired() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
-    }
+    
     
     
     @Nullable
@@ -234,7 +229,6 @@ public class NotificationService extends Service implements Application.Activity
     public void onActivityStopped( @NonNull Activity activity ) {
     
     }
-    
     @Override
     public void onActivitySaveInstanceState( @NonNull Activity activity, @NonNull Bundle bundle ) {
     

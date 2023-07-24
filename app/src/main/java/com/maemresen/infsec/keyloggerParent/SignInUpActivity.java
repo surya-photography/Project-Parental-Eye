@@ -1,6 +1,8 @@
 package com.maemresen.infsec.keyloggerParent;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -45,11 +47,11 @@ public class SignInUpActivity extends AppCompatActivity {
     private GoogleSignInClient googleSignInClient;
     private ActivityResultLauncher<Intent> googleSignInLauncher;
     
-    
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
         setContentView( R.layout.signin_page );
+        setRequestedOrientation( ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         
         emailEditText = findViewById( R.id.email_edittext );
         passwordEditText = findViewById( R.id.password_edittext );
@@ -128,6 +130,8 @@ public class SignInUpActivity extends AppCompatActivity {
             emailEditText.setError("Invalid Gmail format");
             return;
         }
+        
+        
         firebaseAuth.sendPasswordResetEmail( email )
                 .addOnSuccessListener( new OnSuccessListener<Void>() {
                     @Override
@@ -164,15 +168,25 @@ public class SignInUpActivity extends AppCompatActivity {
             passwordEditText.setTextColor( Color.parseColor( "#000000" ) );
             return;
         }
+    
+        String username = email.split("@")[0];
         
         firebaseAuth.signInWithEmailAndPassword( email, password )
                 .addOnCompleteListener( this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete( @NonNull Task<AuthResult> task ) {
                         if (task.isSuccessful()) {
-                            Intent intent = new Intent( SignInUpActivity.this, MainActivity.class );
-                            startActivity( intent );
+                            
+                            SharedPreferences preference = getSharedPreferences( "UserLoginActivity",MODE_PRIVATE );
+                            SharedPreferences.Editor editor = preference.edit();
+                            editor.putBoolean( "login",true );
+                            editor.putString( "UserEmailPref", username );
+                            editor.apply();
+                            
+                            Intent UserNameIntent = new Intent( SignInUpActivity.this, MainActivity.class );
+                            startActivity( UserNameIntent );
                             finish();
+                            
                         } else {
                             passwordEditText.setTextColor( Color.parseColor( "#FF0000" ) );
                             Toast.makeText(getApplicationContext(), "Authentication failed!\nEmail Doesn't match Please Sign Up", Toast.LENGTH_LONG).show();
@@ -199,14 +213,23 @@ public class SignInUpActivity extends AppCompatActivity {
             Toast.makeText( getApplicationContext(), "Enter password!", Toast.LENGTH_SHORT ).show();
             return;
         }
+    
+        String username = email.split("@")[0];
         
         firebaseAuth.createUserWithEmailAndPassword( email, password )
                 .addOnCompleteListener( this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete( @NonNull Task<AuthResult> task ) {
                         if (task.isSuccessful()) {
-                            Intent intent = new Intent( SignInUpActivity.this, MainActivity.class );
-                            startActivity( intent );
+    
+                            SharedPreferences preference = getSharedPreferences( "UserLoginActivity",MODE_PRIVATE );
+                            SharedPreferences.Editor editor = preference.edit();
+                            editor.putBoolean( "login",true );
+                            editor.putString( "UserEmailPref",username );
+                            editor.apply();
+    
+                            Intent UserNameIntent = new Intent( SignInUpActivity.this, MainActivity.class );
+                            startActivity( UserNameIntent );
                             finish();
                         } else {
                             Toast.makeText( getApplicationContext(), "Registration failed!\nPlease try Again...",
@@ -228,16 +251,26 @@ public class SignInUpActivity extends AppCompatActivity {
     
     private void firebaseAuthWithGoogle( GoogleSignInAccount account ) {
         AuthCredential credential = GoogleAuthProvider.getCredential( account.getIdToken(), null );
+    
+        String email = account.getEmail();
+        assert email != null;
+        String username = email.split("@")[0];
+    
+        
         firebaseAuth.signInWithCredential( credential )
                 .addOnCompleteListener( this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete( @NonNull Task<AuthResult> task ) {
                         if (task.isSuccessful()) {
-                            FirebaseUser user = firebaseAuth.getCurrentUser();
                             
-                            // Proceed with your app logic
-                            Intent intent = new Intent( SignInUpActivity.this, MainActivity.class );
-                            startActivity( intent );
+                            SharedPreferences preference = getSharedPreferences( "UserLoginActivity",MODE_PRIVATE );
+                            SharedPreferences.Editor editor = preference.edit();
+                            editor.putBoolean( "login",true );
+                            editor.putString( "UserEmailPref", username );
+                            editor.apply();
+    
+                            Intent UserNameIntent = new Intent( SignInUpActivity.this, MainActivity.class );
+                            startActivity( UserNameIntent );
                             finish();
                         } else {
                             Toast.makeText( getApplicationContext(), "Firebase Authentication failed", Toast.LENGTH_SHORT ).show();
